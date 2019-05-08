@@ -19,7 +19,8 @@
     )
 
     $out = [System.Collections.ArrayList]@()
-    
+    $error = [System.Collections.ArrayList]@()
+
     $HashArguments = @{
         Pattern = $pattern
         SimpleMatch = !$e
@@ -29,59 +30,69 @@
 
     if ($in)
     {
+        $files = [System.Collections.ArrayList]@()
+
         foreach ($item in $in)
         {
-            $files = Get-ChildItem $item
-
-            foreach ($file in $files)
+            if (Test-Path $item)
             {
-                $content = Get-Content $file
+                $files += Get-ChildItem $item
+            }
+            else
+            {
+                $error += "grep: $($item): No such file or directory"
+            }
+        }
 
-                $contentMatches = @($content | Out-String -Stream | Select-String @HashArguments)
+        foreach ($file in $files)
+        {
+            $content = Get-Content $file.FullName
+
+            $contentMatches = @($content | Out-String -Stream | Select-String @HashArguments)
                 
-                if ($c)
+            if ($c)
+            {
+                if ($files.Count -gt 1)
                 {
-                    if ($files.Count -gt 1)
-                    {
-                        $out += "$($file.Name):$($contentMatches.Count)"
-                    }
-                    else
-                    {
-                        $out += "$($contentMatches.Count)"
-                    }
+                    $out += "$($file.Name):$($contentMatches.Count)"
                 }
                 else
                 {
-                    foreach ($contentMatch in $contentMatches)
+                    $out += "$($contentMatches.Count)"
+                }
+            }
+            else
+            {
+                foreach ($contentMatch in $contentMatches)
+                {
+                    if ($files.Count -gt 1)
                     {
-                        if ($files.Count -gt 1)
+                        if ($n)
                         {
-                            if ($n)
-                            {
-                                $out += "$($file.Name):$($contentMatch.LineNumber):$($contentMatch.Line)"
-                            }
-                            else
-                            {
-                                $out += "$($file.Name):$($contentMatch.Line)"
-                            }
+                            $out += "$($file.Name):$($contentMatch.LineNumber):$($contentMatch.Line)"
                         }
                         else
                         {
-                            if ($n)
-                            {
-                                $out += "$($contentMatch.LineNumber):$($contentMatch.Line)"
-                            }
-                            else
-                            {
-                                $out += "$($contentMatch.Line)"
-                            }
+                            $out += "$($file.Name):$($contentMatch.Line)"
+                        }
+                    }
+                    else
+                    {
+                        if ($n)
+                        {
+                            $out += "$($contentMatch.LineNumber):$($contentMatch.Line)"
+                        }
+                        else
+                        {
+                            $out += "$($contentMatch.Line)"
                         }
                     }
                 }
             }
-
-            $out
         }
+
+        $out
+        $error
     }
     elseif ($input)
     {
@@ -104,7 +115,7 @@
                     $out += "$($contentMatch.Line)"
                 }
             }
-
+            
             $out
         }   
 
