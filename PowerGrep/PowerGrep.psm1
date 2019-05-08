@@ -103,6 +103,8 @@
                 {
                     $out += "$($contentMatch.Line)"
                 }
+
+                $out
             }
         }   
 
