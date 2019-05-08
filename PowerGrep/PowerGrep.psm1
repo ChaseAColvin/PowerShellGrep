@@ -103,9 +103,9 @@
                 {
                     $out += "$($contentMatch.Line)"
                 }
-
-                $out
             }
+
+            $out
         }   
 
     }
