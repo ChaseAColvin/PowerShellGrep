@@ -38,7 +38,7 @@
             {
                 if ((Get-Item $item).Mode -notlike "d*")
                 {
-                    $files += Get-ChildItem $item
+                    $files += Get-ChildItem $item | Where-Object {$_.Mode -notlike "d*"}
                 }
                 else
                 {
@@ -51,7 +51,7 @@
             }
         }
 
-        foreach ($file in $files)
+        foreach ($file in ($files | Sort-Object -Unique))
         {
             $content = Get-Content $file.FullName
 
