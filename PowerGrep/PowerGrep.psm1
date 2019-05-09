@@ -36,7 +36,14 @@
         {
             if (Test-Path $item)
             {
-                $files += Get-ChildItem $item
+                if ((Get-Item $item).Mode -notlike "d*")
+                {
+                    $files += Get-ChildItem $item
+                }
+                else
+                {
+                    $error += "grep: $($item): Is a directory"
+                }
             }
             else
             {
@@ -52,7 +59,7 @@
                 
             if ($c)
             {
-                if ($files.Count -gt 1)
+                if ($in.Count -gt 1)
                 {
                     $out += "$($file.Name):$($contentMatches.Count)"
                 }
@@ -65,7 +72,7 @@
             {
                 foreach ($contentMatch in $contentMatches)
                 {
-                    if ($files.Count -gt 1)
+                    if ($in.Count -gt 1)
                     {
                         if ($n)
                         {
