@@ -18,7 +18,7 @@
     [switch]$n
     )
 
-    $out = [System.Collections.ArrayList]@()
+    #$out = [System.Collections.ArrayList]@()
     $error = [System.Collections.ArrayList]@()
 
     $HashArguments = @{
@@ -59,46 +59,49 @@
                 
             if ($c)
             {
-                if ($in.Count -gt 1)
+                if (($files | Sort-Object -Unique).Count -gt 1)
                 {
-                    $out += "$($file.Name):$($contentMatches.Count)"
+                    $out = "$($file.Name):$($contentMatches.Count)"
                 }
                 else
                 {
-                    $out += "$($contentMatches.Count)"
+                    $out = "$($contentMatches.Count)"
                 }
+                $out
             }
             else
             {
                 foreach ($contentMatch in $contentMatches)
                 {
-                    if ($in.Count -gt 1)
+                    if (($files | Sort-Object -Unique).Count -gt 1)
                     {
                         if ($n)
                         {
-                            $out += "$($file.Name):$($contentMatch.LineNumber):$($contentMatch.Line)"
+                            $out = "$($file.Name):$($contentMatch.LineNumber):$($contentMatch.Line)"
                         }
                         else
                         {
-                            $out += "$($file.Name):$($contentMatch.Line)"
+                            $out = "$($file.Name):$($contentMatch.Line)"
                         }
+                        $out
                     }
                     else
                     {
                         if ($n)
                         {
-                            $out += "$($contentMatch.LineNumber):$($contentMatch.Line)"
+                            $out = "$($contentMatch.LineNumber):$($contentMatch.Line)"
                         }
                         else
                         {
-                            $out += "$($contentMatch.Line)"
+                            $out = "$($contentMatch.Line)"
                         }
+                        $out
                     }
                 }
             }
         }
 
-        $out
+        #$out
         $error
     }
     elseif ($input)
@@ -115,15 +118,16 @@
             {
                 if ($n)
                 {
-                    $out += "$($contentMatch.LineNumber):$($contentMatch.Line)"
+                    $out = "$($contentMatch.LineNumber):$($contentMatch.Line)"
                 }
                 else
                 {
-                    $out += "$($contentMatch.Line)"
+                    $out = "$($contentMatch.Line)"
                 }
+                $out
             }
             
-            $out
+            #$out
         }   
 
     }
